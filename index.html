@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spisguiden, lyssna på hur spisen fungerar</title>
+<style>
+  :root {
+    --svart: #000000;
+    --vit: #ffffff;
+    --gul: #ffe26a;
+    --gra: #f2f2f2;
+    --bla: #003d99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 20px; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--vit);
+    color: var(--svart);
+    line-height: 1.5;
+    padding-bottom: 4rem;
+  }
+  header {
+    padding: 1.6rem 1.2rem 1.2rem;
+    border-bottom: 6px solid var(--svart);
+  }
+  h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+  }
+  .intro {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  main { padding: 1.2rem; max-width: 720px; margin: 0 auto; }
+  .alla-knapp {
+    display: block;
+    width: 100%;
+    font-family: inherit;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--vit);
+    background: var(--bla);
+    border: 4px solid var(--svart);
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1.6rem;
+    cursor: pointer;
+    text-align: left;
+  }
+  .sektion {
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+    background: var(--gra);
+    color: var(--svart);
+    border: 4px solid var(--svart);
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    cursor: pointer;
+  }
+  .sektion h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+  }
+  .sektion .status {
+    font-size: 1.15rem;
+    font-weight: bold;
+  }
+  .sektion.spelar, .alla-knapp.spelar {
+    background: var(--gul);
+    color: var(--svart);
+  }
+  .sektion:focus-visible, .alla-knapp:focus-visible {
+    outline: 6px solid var(--bla);
+    outline-offset: 3px;
+  }
+  .text {
+    font-size: 1.15rem;
+    margin-top: 0.8rem;
+    display: none;
+  }
+  .sektion.spelar .text { display: block; }
+  .stoppa-rad {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--svart);
+    padding: 0.8rem 1.2rem;
+    display: none;
+  }
+  .stoppa-rad.synlig { display: block; }
+  .stoppa-knapp {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: bold;
+    background: var(--gul);
+    color: var(--svart);
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem;
+    cursor: pointer;
+  }
+  .varning { font-weight: bold; }
+  @media (prefers-reduced-motion: no-preference) {
+    .sektion, .alla-knapp { transition: background 0.15s ease; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Spisguiden</h1>
+  <p class="intro">Tryck på en ruta så läser telefonen upp den högt.</p>
+</header>
+
+<main>
+  <button class="alla-knapp" id="allaBtn">Lyssna på hela guiden, från början till slut</button>
+
+  <button class="sektion" data-id="0">
+    <h2>1. Bra att veta först</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Din spis har riktiga vred som du vrider på. Det är bra när du ser dåligt, för du känner med fingrarna var vredet pekar. Värmen uppstår direkt i kastrullens botten. Be gärna om hjälp att sätta kännbara gummiprickar på spisen. En prick vid läge noll på varje vred, så känner du alltid att spisen är avstängd. Och en prick vid det läge du oftast lagar mat på, till exempel läge sex. Prickarna finns hos syncentralen och i hjälpmedelsbutiker.</div>
+  </button>
+
+  <button class="sektion" data-id="1">
+    <h2>2. Rätt kastruller</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Spisen fungerar bara med kastruller som en magnet fastnar på. Testa så här. Håll en kylskåpsmagnet mot kastrullens botten. Känner du att magneten fastnar, då fungerar kastrullen. Om kastrullen inte blir varm är det oftast fel kastrull, inte fel på spisen. Ljusa kastruller syns bättre mot det mörka glaset än svarta. Ställ kastrullen på plats innan du sätter på värmen, och vänd handtaget åt sidan så att du inte river ner den. Lyft kastrullen när du flyttar den, dra den inte över glaset.</div>
+  </button>
+
+  <button class="sektion" data-id="2">
+    <h2>3. Så lagar du mat</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Spisen har fyra kokzoner och fyra vred, ett för varje zon. Ställ kastrullen på zonen. Vrid vredet till en siffra mellan ett och nio. Låg siffra ger svag värme, hög siffra ger stark värme. Ett till två håller maten varm. Tre till fyra för att koka sakta, till exempel gröt. Fem till sex för potatis, pasta och grönsaker. Sju till åtta för att steka. Nio för att koka upp vatten snabbt. När maten är klar vrider du tillbaka vredet till noll, ända till pricken. Känn alltid efter en extra gång att vredet står på noll. Lyssna gärna på spisen. Kastrullen brummar svagt när värmen är på, och kokande vatten hörs tydligt.</div>
+  </button>
+
+  <button class="sektion" data-id="3">
+    <h2>4. Spisen är het efteråt</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Spisen visar en liten varning i displayen när ytan är het, men den är svår att se. Använd i stället denna regel. Räkna med att spisen är het i en halvtimme efter att du lagat mat. Lägg aldrig handen direkt på en zon som nyss varit på. Vill du kontrollera värmen, håll handflatan en bit ovanför ytan utan att röra glaset. Då känner du om det strålar värme.</div>
+  </button>
+
+  <button class="sektion" data-id="4">
+    <h2>5. Om det börjar brinna</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text varning">Om det börjar brinna i en kastrull. Häll aldrig vatten på brinnande fett eller olja, då blir elden mycket värre. Gör så här i stället. Lägg ett lock på kastrullen och vrid vredet till noll. Ha alltid ett lock liggande på en bestämd plats nära spisen, så hittar du det med handen utan att leta. Gå aldrig ifrån spisen när du steker i smör eller olja.</div>
+  </button>
+
+  <button class="sektion" data-id="5">
+    <h2>6. Fler säkerhetsråd</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Håll ytan runt spisen fri från saker. Lägg inga grytlappar, handdukar eller bestick på spisen. Värm aldrig en tom kastrull. Använd inte sprayflaskor nära spisen när den är på. Om en kokzon stått på mycket länge stänger spisen av den själv, det är en säkerhetsfunktion. Har du pacemaker, fråga din läkare om du kan använda en induktionsspis. Känner du en spricka i glaset, vrid alla vred till noll, stäng av strömmen och ring service.</div>
+  </button>
+
+  <button class="sektion" data-id="6">
+    <h2>7. Hålla spisen ren</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Vänta minst en halvtimme efter matlagningen så att spisen svalnat. Torka av hela glaset med en fuktig trasa och lite milt diskmedel, och torka sedan torrt. Arbeta systematiskt, till exempel uppifrån och ner, så missar du inga fläckar. Använd aldrig stålull eller skurpulver, de repar glaset. Socker och söt mat som hamnat på spisen ska torkas bort så snart det går.</div>
+  </button>
+
+  <button class="sektion" data-id="7">
+    <h2>8. Om spisen inte fungerar</h2>
+    <span class="status">Tryck för att lyssna</span>
+    <div class="text">Kontrollera tre saker först. Fastnar en magnet på kastrullens botten? Står kastrullen mitt på zonen? Har en säkring gått hemma? Om spisen piper eller visar en felkod, be någon med god syn läsa koden, eller ta ett foto med mobilen och förstora bilden. Vrid alla vred till noll och ring service, och berätta vilken kod som visades.</div>
+  </button>
+</main>
+
+<div class="stoppa-rad" id="stoppaRad">
+  <button class="stoppa-knapp" id="stoppaBtn">Stoppa uppläsningen</button>
+</div>
+
+<script>
+(function () {
+  const synth = window.speechSynthesis;
+  const sektioner = Array.from(document.querySelectorAll('.sektion'));
+  const allaBtn = document.getElementById('allaBtn');
+  const stoppaRad = document.getElementById('stoppaRad');
+  const stoppaBtn = document.getElementById('stoppaBtn');
+
+  let svRost = null;
+  function valjRost() {
+    const roster = synth.getVoices();
+    svRost = roster.find(r => r.lang === 'sv-SE')
+          || roster.find(r => r.lang && r.lang.toLowerCase().startsWith('sv'))
+          || null;
+  }
+  valjRost();
+  if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = valjRost;
+
+  let ko = [];          // kö av meningar
+  let spelarNu = false;
+  let aktivId = null;   // 'alla' eller sektionsindex
+
+  function meningar(text) {
+    return text.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function rensaMarkering() {
+    sektioner.forEach(s => {
+      s.classList.remove('spelar');
+      s.querySelector('.status').textContent = 'Tryck för att lyssna';
+    });
+    allaBtn.classList.remove('spelar');
+    allaBtn.textContent = 'Lyssna på hela guiden, från början till slut';
+  }
+
+  function stoppa() {
+    ko = [];
+    spelarNu = false;
+    aktivId = null;
+    synth.cancel();
+    rensaMarkering();
+    stoppaRad.classList.remove('synlig');
+  }
+
+  function spelaNasta() {
+    if (!ko.length) { stoppa(); return; }
+    const del = ko.shift();
+    if (del.markera !== undefined) {
+      rensaMarkeringMjuk(del.markera);
+    }
+    const u = new SpeechSynthesisUtterance(del.text);
+    u.lang = 'sv-SE';
+    if (svRost) u.voice = svRost;
+    u.rate = 0.95;
+    u.onend = spelaNasta;
+    u.onerror = spelaNasta;
+    synth.speak(u);
+  }
+
+  function rensaMarkeringMjuk(index) {
+    sektioner.forEach((s, i) => {
+      const aktiv = i === index;
+      s.classList.toggle('spelar', aktiv);
+      s.querySelector('.status').textContent = aktiv ? 'Läser upp nu. Tryck för att stoppa.' : 'Tryck för att lyssna';
+    });
+  }
+
+  function spelaSektion(index) {
+    stoppaTyst();
+    aktivId = index;
+    spelarNu = true;
+    stoppaRad.classList.add('synlig');
+    const s = sektioner[index];
+    const rubrik = s.querySelector('h2').textContent;
+    const text = s.querySelector('.text').textContent;
+    ko = [{ text: rubrik, markera: index }].concat(meningar(text).map(t => ({ text: t })));
+    spelaNasta();
+  }
+
+  function spelaAlla() {
+    stoppaTyst();
+    aktivId = 'alla';
+    spelarNu = true;
+    stoppaRad.classList.add('synlig');
+    allaBtn.classList.add('spelar');
+    allaBtn.textContent = 'Läser upp hela guiden. Tryck för att stoppa.';
+    ko = [];
+    sektioner.forEach((s, i) => {
+      const rubrik = s.querySelector('h2').textContent;
+      const text = s.querySelector('.text').textContent;
+      ko.push({ text: rubrik, markera: i });
+      meningar(text).forEach(t => ko.push({ text: t }));
+    });
+    spelaNasta();
+  }
+
+  function stoppaTyst() {
+    ko = [];
+    synth.cancel();
+    rensaMarkering();
+  }
+
+  sektioner.forEach((s, i) => {
+    s.addEventListener('click', () => {
+      if (spelarNu && aktivId === i) { stoppa(); }
+      else { spelaSektion(i); }
+    });
+  });
+
+  allaBtn.addEventListener('click', () => {
+    if (spelarNu && aktivId === 'alla') { stoppa(); }
+    else { spelaAlla(); }
+  });
+
+  stoppaBtn.addEventListener('click', stoppa);
+
+  // Vissa webblasare pausar talsyntesen nar skarmen slacks, vack den igen
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && spelarNu && synth.paused) synth.resume();
+  });
+})();
+</script>
+</body>
+</html>
