@@ -118,7 +118,7 @@
 
 <header>
   <h1>Spisguiden</h1>
-  <p class="intro">Tryck på en ruta så läser telefonen upp den högt.</p>
+  <p class="intro">Tryck på en ruta så läses den upp högt.</p>
 </header>
 
 <main>
@@ -180,10 +180,20 @@
 <script>
 (function () {
   const synth = window.speechSynthesis;
+  const spelare = new Audio();
   const sektioner = Array.from(document.querySelectorAll('.sektion'));
   const allaBtn = document.getElementById('allaBtn');
   const stoppaRad = document.getElementById('stoppaRad');
   const stoppaBtn = document.getElementById('stoppaBtn');
+
+  // Ljudfiler: om dessa finns i arkivet spelas de i stallet for talsyntes
+  const harLjud = {};
+  const filer = ['del1.mp3','del2.mp3','del3.mp3','del4.mp3','del5.mp3','del6.mp3','del7.mp3','del8.mp3','hela.mp3'];
+  filer.forEach(f => {
+    fetch('/' + f, { method: 'HEAD' })
+      .then(r => { harLjud[f] = r.ok; })
+      .catch(() => { harLjud[f] = false; });
+  });
 
   let svRost = null;
   function valjRost() {
@@ -195,9 +205,9 @@
   valjRost();
   if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = valjRost;
 
-  let ko = [];          // kö av meningar
+  let ko = [];
   let spelarNu = false;
-  let aktivId = null;   // 'alla' eller sektionsindex
+  let aktivId = null;
 
   function meningar(text) {
     return text.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
@@ -212,21 +222,39 @@
     allaBtn.textContent = 'Lyssna på hela guiden, från början till slut';
   }
 
+  function markera(index) {
+    sektioner.forEach((s, i) => {
+      const aktiv = i === index;
+      s.classList.toggle('spelar', aktiv);
+      s.querySelector('.status').textContent = aktiv ? 'Läser upp nu. Tryck för att stoppa.' : 'Tryck för att lyssna';
+    });
+  }
+
   function stoppa() {
     ko = [];
     spelarNu = false;
     aktivId = null;
     synth.cancel();
+    spelare.onended = null;
+    spelare.pause();
+    spelare.currentTime = 0;
     rensaMarkering();
     stoppaRad.classList.remove('synlig');
+  }
+
+  function stoppaTyst() {
+    ko = [];
+    synth.cancel();
+    spelare.onended = null;
+    spelare.pause();
+    spelare.currentTime = 0;
+    rensaMarkering();
   }
 
   function spelaNasta() {
     if (!ko.length) { stoppa(); return; }
     const del = ko.shift();
-    if (del.markera !== undefined) {
-      rensaMarkeringMjuk(del.markera);
-    }
+    if (del.markera !== undefined) markera(del.markera);
     const u = new SpeechSynthesisUtterance(del.text);
     u.lang = 'sv-SE';
     if (svRost) u.voice = svRost;
@@ -236,19 +264,7 @@
     synth.speak(u);
   }
 
-  function rensaMarkeringMjuk(index) {
-    sektioner.forEach((s, i) => {
-      const aktiv = i === index;
-      s.classList.toggle('spelar', aktiv);
-      s.querySelector('.status').textContent = aktiv ? 'Läser upp nu. Tryck för att stoppa.' : 'Tryck för att lyssna';
-    });
-  }
-
-  function spelaSektion(index) {
-    stoppaTyst();
-    aktivId = index;
-    spelarNu = true;
-    stoppaRad.classList.add('synlig');
+  function sektionMedTal(index) {
     const s = sektioner[index];
     const rubrik = s.querySelector('h2').textContent;
     const text = s.querySelector('.text').textContent;
@@ -256,13 +272,23 @@
     spelaNasta();
   }
 
-  function spelaAlla() {
+  function spelaSektion(index) {
     stoppaTyst();
-    aktivId = 'alla';
+    aktivId = index;
     spelarNu = true;
     stoppaRad.classList.add('synlig');
-    allaBtn.classList.add('spelar');
-    allaBtn.textContent = 'Läser upp hela guiden. Tryck för att stoppa.';
+    markera(index);
+    const fil = 'del' + (index + 1) + '.mp3';
+    if (harLjud[fil]) {
+      spelare.src = '/' + fil;
+      spelare.onended = stoppa;
+      spelare.play().catch(() => sektionMedTal(index));
+    } else {
+      sektionMedTal(index);
+    }
+  }
+
+  function allaMedTal() {
     ko = [];
     sektioner.forEach((s, i) => {
       const rubrik = s.querySelector('h2').textContent;
@@ -273,10 +299,20 @@
     spelaNasta();
   }
 
-  function stoppaTyst() {
-    ko = [];
-    synth.cancel();
-    rensaMarkering();
+  function spelaAlla() {
+    stoppaTyst();
+    aktivId = 'alla';
+    spelarNu = true;
+    stoppaRad.classList.add('synlig');
+    allaBtn.classList.add('spelar');
+    allaBtn.textContent = 'Läser upp hela guiden. Tryck för att stoppa.';
+    if (harLjud['hela.mp3']) {
+      spelare.src = '/hela.mp3';
+      spelare.onended = stoppa;
+      spelare.play().catch(allaMedTal);
+    } else {
+      allaMedTal();
+    }
   }
 
   sektioner.forEach((s, i) => {
@@ -293,7 +329,6 @@
 
   stoppaBtn.addEventListener('click', stoppa);
 
-  // Vissa webblasare pausar talsyntesen nar skarmen slacks, vack den igen
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && spelarNu && synth.paused) synth.resume();
   });
